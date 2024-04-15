@@ -1,0 +1,99 @@
+#include <stdio.h>
+
+char galo[10][10]; 
+int N; 
+int turn = 0;
+
+
+void createGame() {
+    printf("Bem vindo! Escolha o tamanho do tabuleiro (de 3 a 10): \n");
+    scanf("%d", &N);
+
+    printf("Este e o estado atual do jogo:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            galo[i][j] = '.';
+            printf("%c ", galo[i][j]);
+        }
+        printf("\n");
+    }
+    printf("Quem iniciara o jogo? Digite 1 para X ou 2 para O: \n");
+    scanf("%d", &turn);
+}
+
+
+int isGameOver() {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (galo[i][j] == '.')
+                return 0; 
+        }
+    }
+    return 1; 
+}
+
+int findWinner(char player) {
+
+    for (int i = 0; i < N; i++) {
+        int row_win = 1, col_win = 1;
+        for (int j = 0; j < N; j++) {
+            if (galo[i][j] != player)
+                row_win = 0;
+            if (galo[j][i] != player)
+                col_win = 0;
+        }
+        if (row_win || col_win)
+            return 1;
+    }
+
+
+    int diag1_win = 1, diag2_win = 1;
+    for (int i = 0; i < N; i++) {
+        if (galo[i][i] != player)
+            diag1_win = 0;
+        if (galo[i][N - 1 - i] != player)
+            diag2_win = 0;
+    }
+    if (diag1_win || diag2_win)
+        return 1;
+
+    return 0;
+}
+
+void playGame() {
+    createGame();
+
+    int a, b;
+    while (!isGameOver()) {
+        printf("Jogador %c, e a sua vez\n", (turn == 1) ? 'X' : 'O');
+        printf("Escolha a linha e coluna que quer jogar (De 0 a %d): ", N - 1);
+        scanf("%d %d", &a, &b);
+        if (a < 0 || a >= N || b < 0 || b >= N) {
+            printf("Jogada invalida. Tente novamente.\n");
+            continue;
+        }
+        if (galo[a][b] == '.') {
+            galo[a][b] = (turn == 1) ? 'X' : 'O';
+            printf("O jogo agora esta assim:\n");
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    printf("%c ", galo[i][j]);
+                }
+                printf("\n");
+            }
+            if (findWinner((turn == 1) ? 'X' : 'O')) {
+                printf("O %c ganhou! Parabens!\n", (turn == 1) ? 'X' : 'O');
+                return;
+            }
+            turn = (turn == 1) ? 2 : 1;
+        } else {
+            printf("Posicao ja preenchida. Tente novamente.\n");
+        }
+    }
+    printf("Empate! O jogo terminou.\n");
+}
+
+int main() {
+    playGame();
+    return 0;
+}
